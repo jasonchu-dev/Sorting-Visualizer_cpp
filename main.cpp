@@ -7,9 +7,16 @@
 
 using namespace std;
 
+int sz = 100;
+
 void draw_state(int* array, SDL_Renderer* renderer, int red, int blue) {
-	for (int i = 0; i < 100; i++) {
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	for (int i = 0; i < sz; i++) {
+        if (i == red)
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        else if (i == blue)
+            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        else
+		    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_RenderDrawLine(renderer, i, 99, i, array[i]);
 	}
 }
@@ -18,12 +25,13 @@ int main() {
     random_device rd;
 	mt19937 gen(rd());
 	uniform_int_distribution<int> d(1, 99);
-	int array[100];
-	for (int i = 0; i < 100; i++)
+	int array[sz];
+	for (int i = 0; i < sz; i++)
 		array[i] = d(gen);
 
     cout << "Sorting Algorithms:\n";
     cout << "1) Bubble Sort\n";
+    cout << "2) Insertion Sort\n";
     cout << "Select one: ";
     int choice;
     cin >> choice;
@@ -44,6 +52,21 @@ int main() {
                 SDL_Delay(5);
             }
     }
-    else cout << "yay" << endl;
+    else if (choice == 2) {
+        for (int i = 0; i < *(&array + 1) - array - 1; i++) {
+            int min_loc = i;
+            for (int j = i + 1; j < *(&array + 1) - array; j++) {
+                if (array[j] < array[min_loc]) min_loc = j;
+            }
+            if (array[min_loc] < array[i]) swap(array[i], array[min_loc]);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+            draw_state(array, renderer, i, min_loc);
+            SDL_RenderPresent(renderer);
+            SDL_Delay(20);
+        }
+    }
+    else cout << "yay\n";
+    
 	return 0;
 }
