@@ -8,6 +8,7 @@
 using namespace std;
 
 int sz = 100;
+bool running = true;
 
 void draw_state(int* array, SDL_Renderer* renderer, int red, int blue) {
 	for (int i = 0; i < sz; i++) {
@@ -17,7 +18,7 @@ void draw_state(int* array, SDL_Renderer* renderer, int red, int blue) {
             SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         else
 		    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		SDL_RenderDrawLine(renderer, i, 99, i, array[i]);
+		SDL_RenderDrawLine(renderer, i, 99 - array[i], i, 99);
 	}
 }
 
@@ -29,7 +30,6 @@ void bubble_sort(int* array, SDL_Renderer* renderer) {
             SDL_RenderClear(renderer);
             draw_state(array, renderer, i, j);
             SDL_RenderPresent(renderer);
-            SDL_Delay(5);
         }
 }
 
@@ -44,7 +44,7 @@ void selection_sort(int* array, SDL_Renderer* renderer) {
         SDL_RenderClear(renderer);
         draw_state(array, renderer, i, min_loc);
         SDL_RenderPresent(renderer);
-        SDL_Delay(20);
+        SDL_Delay(10);
     }
 }
 
@@ -59,33 +59,25 @@ void quick_sort(int* a, SDL_Renderer* renderer, int from, int to) {
         SDL_RenderClear(renderer);
         draw_state(a, renderer, i, j);
         SDL_RenderPresent(renderer);
-        SDL_Delay(20);
+        SDL_Delay(10);
 	}
     swap(a[from], a[j]);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     draw_state(a, renderer, i, j);
     SDL_RenderPresent(renderer);
-    SDL_Delay(20);
+    SDL_Delay(10);
 	quick_sort(a, renderer, from, j);
 	quick_sort(a, renderer, j + 1, to);
 }
 
 void merge(int* a, SDL_Renderer* renderer, int from, int mid, int to)
 {
-	// Size of the range to be merged	
 	int n = to - from + 1;
-	// Merge both halves into a temporary array b
-	// We allocate the array dynamically because its size is only
-	// known at run time—see Section 7.4
 	int *b = new int[n];
 	int i1 = from;
-	// Next element to consider in the first half
 	int i2 = mid + 1;
-	// Next element to consider in the second half
-	int j = 0; // Next open position in b 
-	// As long as neither i1 nor i2 is past the end, move the smaller
-	// element into b
+	int j = 0;
 	while (i1 <= mid && i2 <= to) {
 		if (a[i1] < a[i2]) {
 			b[j] = a[i1];
@@ -94,7 +86,7 @@ void merge(int* a, SDL_Renderer* renderer, int from, int mid, int to)
             SDL_RenderClear(renderer);
             draw_state(a, renderer, i1, i2);
             SDL_RenderPresent(renderer);
-            SDL_Delay(20);
+            SDL_Delay(10);
 		}
 		else {
 			b[j] = a[i2];
@@ -103,43 +95,38 @@ void merge(int* a, SDL_Renderer* renderer, int from, int mid, int to)
             SDL_RenderClear(renderer);
             draw_state(a, renderer, j, i2);
             SDL_RenderPresent(renderer);
-            SDL_Delay(20);
+            SDL_Delay(10);
 		}
 		j++;
 	}
-	// Note that only one of the two while loops below is executed
-	// Copy any remaining entries of the first half
 	while (i1 <= mid) {
 		b[j] = a[i1];
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         draw_state(a, renderer, j, i1);
         SDL_RenderPresent(renderer);
-        SDL_Delay(20);
+        SDL_Delay(10);
 		i1++;
 		j++;
 	}
-	// Copy any remaining entries of the second half
 	while (i2 <= to) {
 		b[j] = a[i2];
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         draw_state(a, renderer, j, i2);
         SDL_RenderPresent(renderer);
-        SDL_Delay(20);
+        SDL_Delay(10);
 		i2++;
 		j++;
 	}
-	// Copy back from the temporary array
 	for (j = 0; j < n; j++) {
         a[from + j] = b[j];
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         draw_state(a, renderer, from + j, j);
         SDL_RenderPresent(renderer);
-        SDL_Delay(20);
+        SDL_Delay(10);
     }
-	// The temporary array is no longer needed
 	delete[] b;
 }
 
@@ -172,12 +159,19 @@ int main() {
     SDL_Renderer* renderer = nullptr;
 	SDL_CreateWindowAndRenderer(100*10, 100*10, 0, &window, &renderer);
 	SDL_RenderSetScale(renderer, 10, 10);
+    SDL_SetWindowTitle(window, "Sorting Visualizer");
 
     if (choice == 1) bubble_sort(array, renderer);
     else if (choice == 2) selection_sort(array, renderer);
     else if (choice == 3) quick_sort(array, renderer, 0, sz);
     else if (choice == 4) merge_sort(array, renderer, 0, sz);
     else cout << "yay\n";
+
+    SDL_Delay(3000);
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     
 	return 0;
 }
