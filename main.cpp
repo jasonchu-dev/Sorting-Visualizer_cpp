@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <random>
 #include <algorithm>
+#include <chrono>
 
 using namespace std;
 
@@ -20,6 +21,21 @@ void draw_state(int* array, SDL_Renderer* renderer, int purple, int green) {
 		    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_RenderDrawLine(renderer, i, 99 - array[i], i, 99);
 	}
+}
+
+void insertion_sort(int* array, SDL_Renderer* renderer) {
+    for (int i = 1; i < sz; i++) {
+        int j = i;
+        while (j > 0 && array[j - 1] > array[j]) {
+            swap(array[j], array[j - 1]);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+            draw_state(array, renderer, i, j);
+            SDL_RenderPresent(renderer);
+            SDL_Delay(t);
+            j--;
+        }
+    }
 }
 
 void bubble_sort(int* array, SDL_Renderer* renderer) {
@@ -49,7 +65,7 @@ void selection_sort(int* array, SDL_Renderer* renderer) {
     }
 }
 
-void quick_sort(int* a, SDL_Renderer* renderer, int from, int to) {
+void quicksort(int* a, SDL_Renderer* renderer, int from, int to) {
 	if (from >= to) return;
 	int pivot = a[from], i = from, j = to;
 	while (i < j) {	
@@ -68,8 +84,8 @@ void quick_sort(int* a, SDL_Renderer* renderer, int from, int to) {
     draw_state(a, renderer, i, j);
     SDL_RenderPresent(renderer);
     SDL_Delay(t);
-	quick_sort(a, renderer, from, j);
-	quick_sort(a, renderer, j + 1, to);
+	quicksort(a, renderer, from, j);
+	quicksort(a, renderer, j + 1, to);
 }
 
 void merge(int* a, SDL_Renderer* renderer, int from, int mid, int to)
@@ -139,14 +155,69 @@ void merge_sort(int* array, SDL_Renderer* renderer, int from, int to) {
 	merge(array, renderer, from, mid, to);
 }
 
+
+void heapify(int arr[], SDL_Renderer* renderer, int n, int i) {
+	int largest = i;
+	int left = 2 * i + 1;
+	int right = 2 * i + 2;
+
+	if (left < n && arr[left] > arr[largest])
+		largest = left;
+
+	if (right < n && arr[right] > arr[largest])
+		largest = right;
+
+	if (largest != i) {
+		swap(arr[i], arr[largest]);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+		draw_state(arr, renderer, i, largest);
+		SDL_RenderPresent(renderer);
+		SDL_Delay(t);
+		heapify(arr, renderer, n, largest);
+	}
+}
+
+void heapsort(int arr[], SDL_Renderer* renderer) {
+	for (int i = sz / 2 - 1; i >= 0; i--)
+		heapify(arr, renderer, sz, i);
+
+	for (int i = sz - 1; i >= 0; i--) {
+		swap(arr[0], arr[i]);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+		draw_state(arr, renderer, 0, i);
+		SDL_RenderPresent(renderer);
+		SDL_Delay(t);
+		heapify(arr, renderer, i, 0);
+	}
+}
+
+void shellsort(int arr[], SDL_Renderer* renderer) {
+	for (int gap = sz / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < sz; i++) {
+			int temp = arr[i];
+			int j;
+			for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+				arr[j] = arr[j - gap];
+				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+				SDL_RenderClear(renderer);
+				draw_state(arr, renderer, j, j - gap);
+				SDL_RenderPresent(renderer);
+				SDL_Delay(t);
+			}
+			arr[j] = temp;
+		}
+	}
+}
+
 int main(int argc, char** argv) {
-    random_device rd;
-	mt19937 gen(rd());
-	uniform_int_distribution<int> d(1, 99);
-	int array[sz];
-	for (int i = 0; i < sz; i++)
-		array[i] = d(gen);
-    
+    int array[sz];
+    for (int i = 0; i < sz; i++)
+        array[i] = i;
+    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+    shuffle(array, array + sz, default_random_engine(seed));
+
     int choice;
 
     if (argc == 2) choice = atoi(argv[1]);
@@ -159,14 +230,19 @@ int main(int argc, char** argv) {
             cout << "Sorting Algorithms:\n";
             cout << "1) Bubble Sort\n";
             cout << "2) Selection Sort\n";
-            cout << "3) Quick Sort\n";
+            cout << "3) Quicksort\n";
             cout << "4) Merge Sort\n";
+            cout << "5) Insertion Sort\n";
+            cout << "6) Heapsort\n";
+            cout << "7) Shellsort\n";
+            cout << "8) Do all\n";
             cout << "Select one: ";
             cin >> choice;
-            if (choice == 1 || choice == 2 || choice == 3 || choice == 4) break;
+            if (choice > 0 && choice < 9) break;
             else cout << "Invalid, try again\n";
         }
         while (1) {
+			if (choice == 8) break;
             cout << "Speed of algorithm in milliseconds: ";
             cin >> t;
             if (t < 0) cout << "Must be 0 or above, try again\n";
@@ -182,8 +258,46 @@ int main(int argc, char** argv) {
 
     if (choice == 1) bubble_sort(array, renderer);
     else if (choice == 2) selection_sort(array, renderer);
-    else if (choice == 3) quick_sort(array, renderer, 0, sz);
+    else if (choice == 3) quicksort(array, renderer, 0, sz);
     else if (choice == 4) merge_sort(array, renderer, 0, sz);
+    else if (choice == 5) insertion_sort(array, renderer);
+    else if (choice == 6) heapsort(array, renderer);
+    else if (choice == 7) shellsort(array, renderer);
+    else if (choice == 8) {
+        shuffle(array, array + sz, default_random_engine(seed));
+        t = 0;
+        bubble_sort(array, renderer);
+        SDL_Delay(500);
+
+        shuffle(array, array + sz, default_random_engine(seed));
+        t = 20;
+        selection_sort(array, renderer);
+        SDL_Delay(500);
+
+        shuffle(array, array + sz, default_random_engine(seed));
+        t = 10;
+        quicksort(array, renderer, 0, sz);
+        SDL_Delay(500);
+        
+        shuffle(array, array + sz, default_random_engine(seed));
+        t = 2;
+        merge_sort(array, renderer, 0, sz);
+        SDL_Delay(500);
+
+        shuffle(array, array + sz, default_random_engine(seed));
+        t = 0;
+        insertion_sort(array, renderer);
+        SDL_Delay(500);
+
+        shuffle(array, array + sz, default_random_engine(seed));
+        t = 3;
+        heapsort(array, renderer);
+        SDL_Delay(500);
+
+        shuffle(array, array + sz, default_random_engine(seed));
+        t = 7;
+        shellsort(array, renderer);
+    }
     else cout << "Invalid input\n";
 
     SDL_Delay(3000);

@@ -4,12 +4,15 @@ Sorting visualizer using C++ and SDL2 library.
 
 ## Sorts implemented:
 * Bubble Sort
-* Insertion Sort
+* Selection Sort
 * Quicksort
 * Merge Sort
+* Insertion Sort
+* Heapsort
+* Shellsort
 
 ## Requirements
-* Just need SDL2 library
+* SDL2 library
 
 ## Run
 ```
