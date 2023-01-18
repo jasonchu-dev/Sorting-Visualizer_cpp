@@ -228,19 +228,6 @@ int main(int argc, char** argv) {
     else {
         while (1) {
             cout << endl;
-            cout << "Time complexities:" << endl << endl;
-            cout << "            | Bubble Sort | Selection Sort | Quicksort | Merge Sort | Insertion Sort | Heapsort | Shellsort |" << endl;
-            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
-            cout << "    Best    |      n      |       n^2      |  n log n  |   n log n  |        n       |  n log n |  n log n  |" << endl;
-            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
-            cout << "    Average |     n^2     |       n^2      |  n log n  |   n log n  |       n^2      |  n log n |  n^(4/3)  |" << endl;
-            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
-            cout << "    Worst   |     n^2     |       n^2      |    n^2    |   n log n  |       n^2      |  n log n |  n^(3/2)  |" << endl;
-            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
-            cout << "    Memory  |      1      |        1       |   log n   |      n     |        1       |     1    |     1     |" << endl;
-            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
-            cout << "    Stable  |      Y      |        N       |     N     |      Y     |        Y       |     N    |     N     |" << endl;
-            cout << endl;
             cout << "Sorting Algorithms:" << endl << endl;
             cout << "   1) Bubble Sort" << endl;
             cout << "   2) Selection Sort" << endl;
@@ -253,15 +240,16 @@ int main(int argc, char** argv) {
             cout << endl << "Select one: ";
             cin >> choice;
             if (choice > 0 && choice < 9) break;
-            else cout << "Invalid, try again";
+            else cout << endl << "Invalid, try again" << endl;
         }
         while (1) {
 			if (choice == 8) break;
-            cout << "Speed of algorithm in milliseconds: ";
+            cout << endl << "Speed of algorithm in milliseconds: ";
             cin >> t;
-            if (t < 0) cout << "Must be 0 or above, try again";
+            if (t < 0) cout << endl << "Must be 0 or above, try again";
             else break;
         }
+        cout << endl;
     }
 
     SDL_Window* window = nullptr;
@@ -312,7 +300,6 @@ int main(int argc, char** argv) {
         t = 7;
         shellSort(array, renderer);
     }
-    else cout << "Invalid input";
 
     SDL_Delay(3000);
 
