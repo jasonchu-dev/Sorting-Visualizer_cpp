@@ -8,11 +8,11 @@
 
 using namespace std;
 
-int sz = 100, t = 0;
+int n = 100, t = 0;
 bool running = true;
 
 void draw_state(int* array, SDL_Renderer* renderer, int purple, int green) {
-	for (int i = 0; i < sz; i++) {
+	for (int i = 0; i < n; i++) {
         if (i == purple)
             SDL_SetRenderDrawColor(renderer, 127, 0, 255, 255);
         else if (i == green)
@@ -23,8 +23,8 @@ void draw_state(int* array, SDL_Renderer* renderer, int purple, int green) {
 	}
 }
 
-void insertion_sort(int* array, SDL_Renderer* renderer) {
-    for (int i = 1; i < sz; i++) {
+void insertionSort(int* array, SDL_Renderer* renderer) {
+    for (int i = 1; i < n; i++) {
         int j = i;
         while (j > 0 && array[j - 1] > array[j]) {
             swap(array[j], array[j - 1]);
@@ -38,9 +38,9 @@ void insertion_sort(int* array, SDL_Renderer* renderer) {
     }
 }
 
-void bubble_sort(int* array, SDL_Renderer* renderer) {
-    for (int i = 0; i < sz; i++)
-        for (int j = i; j < sz; j++) {
+void bubbleSort(int* array, SDL_Renderer* renderer) {
+    for (int i = 0; i < n; i++)
+        for (int j = i; j < n; j++) {
             if (array[i] > array[j]) swap(array[i], array[j]);
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
@@ -50,10 +50,10 @@ void bubble_sort(int* array, SDL_Renderer* renderer) {
         }
 }
 
-void selection_sort(int* array, SDL_Renderer* renderer) {
-    for (int i = 0; i < sz; i++) {
+void selectionSort(int* array, SDL_Renderer* renderer) {
+    for (int i = 0; i < n; i++) {
         int min_loc = i;
-        for (int j = i + 1; j < sz; j++) {
+        for (int j = i + 1; j < n; j++) {
             if (array[j] < array[min_loc]) min_loc = j;
         }
         if (array[min_loc] < array[i]) swap(array[i], array[min_loc]);
@@ -65,7 +65,7 @@ void selection_sort(int* array, SDL_Renderer* renderer) {
     }
 }
 
-void quicksort(int* a, SDL_Renderer* renderer, int from, int to) {
+void quickSort(int* a, SDL_Renderer* renderer, int from, int to) {
 	if (from >= to) return;
 	int pivot = a[from], i = from, j = to;
 	while (i < j) {	
@@ -84,8 +84,8 @@ void quicksort(int* a, SDL_Renderer* renderer, int from, int to) {
     draw_state(a, renderer, i, j);
     SDL_RenderPresent(renderer);
     SDL_Delay(t);
-	quicksort(a, renderer, from, j);
-	quicksort(a, renderer, j + 1, to);
+	quickSort(a, renderer, from, j);
+	quickSort(a, renderer, j + 1, to);
 }
 
 void merge(int* a, SDL_Renderer* renderer, int from, int mid, int to)
@@ -147,11 +147,11 @@ void merge(int* a, SDL_Renderer* renderer, int from, int mid, int to)
 	delete[] b;
 }
 
-void merge_sort(int* array, SDL_Renderer* renderer, int from, int to) {
+void mergeSort(int* array, SDL_Renderer* renderer, int from, int to) {
 	if (from == to) return;
 	int mid = (from + to) / 2;
-	merge_sort(array, renderer, from, mid);
-	merge_sort(array, renderer, mid + 1, to);
+	mergeSort(array, renderer, from, mid);
+	mergeSort(array, renderer, mid + 1, to);
 	merge(array, renderer, from, mid, to);
 }
 
@@ -178,11 +178,11 @@ void heapify(int arr[], SDL_Renderer* renderer, int n, int i) {
 	}
 }
 
-void heapsort(int arr[], SDL_Renderer* renderer) {
-	for (int i = sz / 2 - 1; i >= 0; i--)
-		heapify(arr, renderer, sz, i);
+void heapSort(int arr[], SDL_Renderer* renderer) {
+	for (int i = n / 2 - 1; i >= 0; i--)
+		heapify(arr, renderer, n, i);
 
-	for (int i = sz - 1; i >= 0; i--) {
+	for (int i = n - 1; i >= 0; i--) {
 		swap(arr[0], arr[i]);
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
@@ -193,9 +193,9 @@ void heapsort(int arr[], SDL_Renderer* renderer) {
 	}
 }
 
-void shellsort(int arr[], SDL_Renderer* renderer) {
-	for (int gap = sz / 2; gap > 0; gap /= 2) {
-		for (int i = gap; i < sz; i++) {
+void shellSort(int arr[], SDL_Renderer* renderer) {
+	for (int gap = n / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < n; i++) {
 			int temp = arr[i];
 			int j;
 			for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
@@ -212,11 +212,11 @@ void shellsort(int arr[], SDL_Renderer* renderer) {
 }
 
 int main(int argc, char** argv) {
-    int array[sz];
-    for (int i = 0; i < sz; i++)
+    int array[n];
+    for (int i = 0; i < n; i++)
         array[i] = i;
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-    shuffle(array, array + sz, default_random_engine(seed));
+    shuffle(array, array + n, default_random_engine(seed));
 
     int choice;
 
@@ -227,25 +227,39 @@ int main(int argc, char** argv) {
     }
     else {
         while (1) {
-            cout << "Sorting Algorithms:\n";
-            cout << "1) Bubble Sort\n";
-            cout << "2) Selection Sort\n";
-            cout << "3) Quicksort\n";
-            cout << "4) Merge Sort\n";
-            cout << "5) Insertion Sort\n";
-            cout << "6) Heapsort\n";
-            cout << "7) Shellsort\n";
-            cout << "8) Do all\n";
-            cout << "Select one: ";
+            cout << endl;
+            cout << "Time complexities:" << endl << endl;
+            cout << "            | Bubble Sort | Selection Sort | Quicksort | Merge Sort | Insertion Sort | Heapsort | Shellsort |" << endl;
+            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
+            cout << "    Best    |      n      |       n^2      |  n log n  |   n log n  |        n       |  n log n |  n log n  |" << endl;
+            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
+            cout << "    Average |     n^2     |       n^2      |  n log n  |   n log n  |       n^2      |  n log n |  n^(4/3)  |" << endl;
+            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
+            cout << "    Worst   |     n^2     |       n^2      |    n^2    |   n log n  |       n^2      |  n log n |  n^(3/2)  |" << endl;
+            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
+            cout << "    Memory  |      1      |        1       |   log n   |      n     |        1       |     1    |     1     |" << endl;
+            cout << "   ----------------------------------------------------------------------------------------------------------" << endl;
+            cout << "    Stable  |      Y      |        N       |     N     |      Y     |        Y       |     N    |     N     |" << endl;
+            cout << endl;
+            cout << "Sorting Algorithms:" << endl << endl;
+            cout << "   1) Bubble Sort" << endl;
+            cout << "   2) Selection Sort" << endl;
+            cout << "   3) Quicksort" << endl;
+            cout << "   4) Merge Sort" << endl;
+            cout << "   5) Insertion Sort" << endl;
+            cout << "   6) Heapsort" << endl;
+            cout << "   7) Shellsort" << endl;
+            cout << "   8) Do all" << endl;
+            cout << endl << "Select one: ";
             cin >> choice;
             if (choice > 0 && choice < 9) break;
-            else cout << "Invalid, try again\n";
+            else cout << "Invalid, try again";
         }
         while (1) {
 			if (choice == 8) break;
             cout << "Speed of algorithm in milliseconds: ";
             cin >> t;
-            if (t < 0) cout << "Must be 0 or above, try again\n";
+            if (t < 0) cout << "Must be 0 or above, try again";
             else break;
         }
     }
@@ -256,49 +270,49 @@ int main(int argc, char** argv) {
 	SDL_RenderSetScale(renderer, 10, 10);
     SDL_SetWindowTitle(window, "Sorting Visualizer");
 
-    if (choice == 1) bubble_sort(array, renderer);
-    else if (choice == 2) selection_sort(array, renderer);
-    else if (choice == 3) quicksort(array, renderer, 0, sz);
-    else if (choice == 4) merge_sort(array, renderer, 0, sz);
-    else if (choice == 5) insertion_sort(array, renderer);
-    else if (choice == 6) heapsort(array, renderer);
-    else if (choice == 7) shellsort(array, renderer);
+    if (choice == 1) bubbleSort(array, renderer);
+    else if (choice == 2) selectionSort(array, renderer);
+    else if (choice == 3) quickSort(array, renderer, 0, n);
+    else if (choice == 4) mergeSort(array, renderer, 0, n);
+    else if (choice == 5) insertionSort(array, renderer);
+    else if (choice == 6) heapSort(array, renderer);
+    else if (choice == 7) shellSort(array, renderer);
     else if (choice == 8) {
-        shuffle(array, array + sz, default_random_engine(seed));
+        shuffle(array, array + n, default_random_engine(seed));
         t = 0;
-        bubble_sort(array, renderer);
+        bubbleSort(array, renderer);
         SDL_Delay(500);
 
-        shuffle(array, array + sz, default_random_engine(seed));
+        shuffle(array, array + n, default_random_engine(seed));
         t = 20;
-        selection_sort(array, renderer);
+        selectionSort(array, renderer);
         SDL_Delay(500);
 
-        shuffle(array, array + sz, default_random_engine(seed));
+        shuffle(array, array + n, default_random_engine(seed));
         t = 10;
-        quicksort(array, renderer, 0, sz);
+        quickSort(array, renderer, 0, n);
         SDL_Delay(500);
         
-        shuffle(array, array + sz, default_random_engine(seed));
+        shuffle(array, array + n, default_random_engine(seed));
         t = 2;
-        merge_sort(array, renderer, 0, sz);
+        mergeSort(array, renderer, 0, n);
         SDL_Delay(500);
 
-        shuffle(array, array + sz, default_random_engine(seed));
+        shuffle(array, array + n, default_random_engine(seed));
         t = 0;
-        insertion_sort(array, renderer);
+        insertionSort(array, renderer);
         SDL_Delay(500);
 
-        shuffle(array, array + sz, default_random_engine(seed));
+        shuffle(array, array + n, default_random_engine(seed));
         t = 3;
-        heapsort(array, renderer);
+        heapSort(array, renderer);
         SDL_Delay(500);
 
-        shuffle(array, array + sz, default_random_engine(seed));
+        shuffle(array, array + n, default_random_engine(seed));
         t = 7;
-        shellsort(array, renderer);
+        shellSort(array, renderer);
     }
-    else cout << "Invalid input\n";
+    else cout << "Invalid input";
 
     SDL_Delay(3000);
 
